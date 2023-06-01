@@ -6,7 +6,17 @@ exports.layDsMonHoc = async (req, res, next) => {
     let connection = await sql.connect(
       config(req.body.user, req.body.password, req.body.chiNhanh)
     );
-    let dsMonHoc = await connection.request().query("SELECT * FROM MONHOC");
+    let dsMonHoc = await connection
+      .request()
+      .input("PAGESIZE", sql.Int, req.body.pageSize)
+      .input(
+        "PAGENUMBER",
+        sql.Int,
+        (req.body.pageNumber - 1) * req.body.pageSize
+      )
+      .query(
+        "SELECT * FROM MONHOC ORDER BY MAMH OFFSET @PAGENUMBER ROWS FETCH NEXT @PAGESIZE ROWS ONLY"
+      );
     res.status(200).send({ data: dsMonHoc.recordset });
     await connection.close();
   } catch (error) {
@@ -49,8 +59,14 @@ exports.layDsLop = async (req, res, next) => {
     );
     let dsLop = await connection
       .request()
+      .input("PAGESIZE", sql.Int, req.body.pageSize)
+      .input(
+        "PAGENUMBER",
+        sql.Int,
+        (req.body.pageNumber - 1) * req.body.pageSize
+      )
       .query(
-        "select MALOP, TENLOP, KHOAHOC, MAKHOA, KHOA = (SELECT TENkHOA FROM KHOA WHERE MAKHOA = MAKHOA) from LOP"
+        "select MALOP, TENLOP, KHOAHOC, MAKHOA, KHOA = (SELECT TENkHOA FROM KHOA WHERE MAKHOA = MAKHOA) from LOP ORDER BY MALOP OFFSET @PAGENUMBER ROWS FETCH NEXT @PAGESIZE ROWS ONLY"
       );
 
     // let dsSV = await connection.request().query("select * from SINHVIEN");
@@ -72,7 +88,11 @@ exports.layDsLopTC = async (req, res, next) => {
     let connection = await sql.connect(
       config(req.body.user, req.body.password, req.body.chiNhanh)
     );
-    let data = await connection.request().execute("SP_Lay_Lop_Tin_Chi");
+    let data = await connection
+      .request()
+      .input("PAGESIZE", sql.Int, req.body.pageSize)
+      .input("PAGENUMBER", sql.Int, req.body.pageNumber)
+      .execute("SP_Lay_Lop_Tin_Chi");
     res.status(200).send({ data: data.recordset });
     await connection.close();
   } catch (error) {

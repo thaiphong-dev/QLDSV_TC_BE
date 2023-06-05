@@ -161,3 +161,103 @@ exports.layDsSinhVien = async (req, res, next) => {
     console.log(error);
   }
 };
+
+exports.layDsFilter = async (req, res, next) => {
+  try {
+    let connection = await sql.connect(
+      config(req.body.user, req.body.password, req.body.chiNhanh)
+    );
+    let DSNIENKHOA = await connection
+      .request()
+      .query(`SELECT DISTINCT NIENKHOA FROM LOPTINCHI`);
+
+    let DSHOCKY = await connection
+      .request()
+      .query(`SELECT DISTINCT HOCKY FROM LOPTINCHI`);
+
+    let DSNHOM = await connection
+      .request()
+      .query(`SELECT DISTINCT NHOM FROM LOPTINCHI`);
+    res.status(200).send({
+      data: {
+        nienKhoa: DSNIENKHOA.recordset,
+        hocKy: DSHOCKY.recordset,
+        nhom: DSNHOM.recordset,
+      },
+    });
+    await connection.close();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.layDsDiemSinhVien = async (req, res, next) => {
+  console.log(req.body);
+  try {
+    let connection = await sql.connect(
+      config(req.body.user, req.body.password, req.body.chiNhanh)
+    );
+    let data = await connection
+      .request()
+      .input("NIENKHOA", sql.NVarChar, req.body.nienKhoa)
+      .input("HOCKY", sql.Int, parseInt(req.body.hocKy))
+      .input("MAMH", sql.NVarChar, req.body.monHoc)
+      .input("NHOM", sql.Int, parseInt(req.body.nhom))
+      .input("PAGESIZE", sql.Int, req.body.pageSize)
+      .input("PAGENUMBER", sql.Int, req.body.pageNumber)
+      .execute("SP_Lay_Danh_Sach_Diem_Sv");
+
+    res.status(200).send({ data: data.recordset });
+
+    await connection.close();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// lấy danh sách lớp tín chỉ theo niên khóa, học kỳ
+exports.layDslopTcDk = async (req, res, next) => {
+  console.log(req.body);
+  try {
+    let connection = await sql.connect(
+      config(req.body.user, req.body.password, req.body.chiNhanh)
+    );
+    let data = await connection
+      .request()
+      .input("NIENKHOA", sql.NVarChar, req.body.nienKhoa)
+      .input("HOCKY", sql.Int, parseInt(req.body.hocKy))
+      .input("PAGESIZE", sql.Int, req.body.pageSize)
+      .input("PAGENUMBER", sql.Int, req.body.pageNumber)
+      .execute("SP_Lay_Danh_Sach_Lop_Tin_Chi_Co_DK");
+
+    res.status(200).send({ data: data.recordset });
+
+    await connection.close();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// lấy ds lớp tín chỉ của sinh viên đã dăng kí
+exports.layDsLopTCSvDK = async (req, res, next) => {
+  console.log(req.body);
+  try {
+    let connection = await sql.connect(
+      config(req.body.user, req.body.password, req.body.chiNhanh)
+    );
+    let data = await connection
+      .request()
+      .input("NIENKHOA", sql.NVarChar, req.body.nienKhoa)
+      .input("HOCKY", sql.Int, parseInt(req.body.hocKy))
+      .input("MASV", sql.NVarChar, req.body.maSv)
+      .input("PAGESIZE", sql.Int, req.body.pageSize)
+      .input("PAGENUMBER", sql.Int, req.body.pageNumber)
+      .execute("SP_Lay_Lop_Tin_Chi_Da_Dang_Ky");
+
+    res.status(200).send({ data: data.recordset });
+
+    await connection.close();
+  } catch (error) {
+    console.log(error);
+  }
+};

@@ -17,4 +17,8 @@ module.exports = function (app) {
   app.post("/dsKhoa", controller.layDsKhoa);
   app.post("/taoLopTC", controller.taoLopTC);
   app.post("/dsSinhVien", controller.layDsSinhVien);
+  app.post("/dsFilter", controller.layDsFilter);
+  app.post("/dsDiemSv", controller.layDsDiemSinhVien);
+  app.post("/dsLopTCDK", controller.layDslopTcDk);
+  app.post("/dsLopTCSVDK", controller.layDsLopTCSvDK);
 };

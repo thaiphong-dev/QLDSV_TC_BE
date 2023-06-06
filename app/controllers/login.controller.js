@@ -17,7 +17,6 @@ exports.layDsPhanManh = async (req, res, next) => {
 };
 
 exports.dangNhap = async (req, res, next) => {
-  console.log("req", req.body);
   try {
     let connection = await sql.connect(
       config(req.body.user, req.body.password, req.body.chiNhanh)
@@ -26,6 +25,24 @@ exports.dangNhap = async (req, res, next) => {
       .request()
       .input("TENLOGIN", sql.NVarChar, req.body.user)
       .execute("SP_Lay_Thong_Tin_NV_Tu_login");
+    res.status(200).send({ data: thongTin.recordset[0] });
+    await connection.close();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.dangNhapSV = async (req, res, next) => {
+  try {
+    let connection = await sql.connect(
+      config(req.body.user, req.body.password, req.body.chiNhanh)
+    );
+    let thongTin = await connection
+      .request()
+      .input("MASV", sql.NVarChar, req.body.maSV)
+      .query(
+        `SELECT MASV, HOTEN = ( HO+ ' '+ TEN), PHAI, DIACHI, NGAYSINH, MALOP, DANGHIHOC FROM SINHVIEN WHERE MASV = @MASV`
+      );
     res.status(200).send({ data: thongTin.recordset[0] });
     await connection.close();
   } catch (error) {

@@ -12,4 +12,5 @@ module.exports = function (app) {
 
   app.get("/dsphanmanh", controller.layDsPhanManh);
   app.post("/dangNhap", controller.dangNhap);
+  app.post("/dangNhapSV", controller.dangNhapSV);
 };

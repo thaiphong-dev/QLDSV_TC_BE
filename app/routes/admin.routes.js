@@ -21,4 +21,5 @@ module.exports = function (app) {
   app.post("/dsDiemSv", controller.layDsDiemSinhVien);
   app.post("/dsLopTCDK", controller.layDslopTcDk);
   app.post("/dsLopTCSVDK", controller.layDsLopTCSvDK);
+  app.post("/dangKyLopTC", controller.dangKyLopTC);
 };

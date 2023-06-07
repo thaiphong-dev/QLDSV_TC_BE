@@ -240,7 +240,6 @@ exports.layDslopTcDk = async (req, res, next) => {
 
 // lấy ds lớp tín chỉ của sinh viên đã dăng kí
 exports.layDsLopTCSvDK = async (req, res, next) => {
-  console.log(req.body);
   try {
     let connection = await sql.connect(
       config(req.body.user, req.body.password, req.body.chiNhanh)
@@ -255,6 +254,47 @@ exports.layDsLopTCSvDK = async (req, res, next) => {
       .execute("SP_Lay_Lop_Tin_Chi_Da_Dang_Ky");
 
     res.status(200).send({ data: data.recordset });
+
+    await connection.close();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// Dang ky lop tin chi
+exports.dangKyLopTC = async (req, res, next) => {
+  try {
+    let connection = await sql.connect(
+      config(req.body.user, req.body.password, req.body.chiNhanh)
+    );
+
+    const table = new sql.Table("DANGKYTYPE");
+
+    // Define the table type schema
+    table.columns.add("MALTC", sql.Int);
+    table.columns.add("MASV", sql.VarChar);
+    table.columns.add("DIEM_CC", sql.Int);
+    table.columns.add("DIEM_GK", sql.Float);
+    table.columns.add("DIEM_CK", sql.Float);
+    table.columns.add("HUYDANGKY", sql.Bit);
+
+    req.body.dsDangKy?.forEach((e) => {
+      table.rows.add(
+        e.MALTC,
+        e.MASV,
+        e.DIEM_CC,
+        e.DIEM_GK,
+        e.DIEM_CK,
+        e.HUYDANGKY
+      );
+    });
+
+    let data = await connection
+      .request()
+      .input("DANGKY", table)
+      .execute("SP_Dang_Ky_Lop_Tin_Chi");
+
+    res.status(200).send({ data: [] });
 
     await connection.close();
   } catch (error) {

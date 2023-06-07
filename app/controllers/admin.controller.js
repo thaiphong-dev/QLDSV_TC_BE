@@ -348,12 +348,6 @@ exports.layDsHocPhi = async (req, res, next) => {
     let connection = await sql.connect(
       config(req.body.user, req.body.password, req.body.chiNhanh)
     );
-    let sinhVien = await connection
-      .request()
-      .input("MASV", sql.NVarChar, req.body.MASV)
-      .query(
-        "select HOTEN = (HO +' '+ TEN), MALOP from SINHVIEN where MASV = @MASV"
-      );
 
     let hocphi = await connection
       .request()
@@ -363,10 +357,55 @@ exports.layDsHocPhi = async (req, res, next) => {
       .execute("SP_Lay_hoc_Phi");
 
     res.status(200).send({
-      data: {
-        hocPhi: hocphi.recordset,
-        sinhVien: sinhVien.recordset,
-      },
+      data: hocphi.recordset,
+    });
+
+    await connection.close();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.laySinhVien = async (req, res, next) => {
+  try {
+    let connection = await sql.connect(
+      config(req.body.user, req.body.password, req.body.chiNhanh)
+    );
+    let sinhVien = await connection
+      .request()
+      .input("MASV", sql.NVarChar, req.body.MASV)
+      .query(
+        "select MASV, HOTEN = (HO +' '+ TEN), MALOP from SINHVIEN where MASV = @MASV"
+      );
+
+    res.status(200).send({
+      data: sinhVien.recordset,
+    });
+
+    await connection.close();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.layCTHocPhi = async (req, res, next) => {
+  try {
+    let connection = await sql.connect(
+      config(req.body.user, req.body.password, req.body.chiNhanh)
+    );
+    let ctHocPhi = await connection
+      .request()
+      .input("MASV", sql.NVarChar, req.body.MASV)
+      .input("NIENKHOA", sql.NVarChar, req.body.NIENKHOA)
+      .input("HOCKY", sql.Int, req.body.HOCKY)
+      .input("PAGESIZE", sql.Int, req.body.pageSize)
+      .input("PAGENUMBER", sql.Int, req.body.pageNumber)
+      .query(
+        "select NGAYDONG, SOTIENDONG from CT_DONGHOCPHI where MASV = @MASV AND NIENKHOA = @NIENKHOA AND HOCKY = @HOCKY ORDER BY NGAYDONG DESC OFFSET @PAGENUMBER ROWS FETCH NEXT @PAGESIZE ROWS ONLY"
+      );
+
+    res.status(200).send({
+      data: ctHocPhi.recordset,
     });
 
     await connection.close();

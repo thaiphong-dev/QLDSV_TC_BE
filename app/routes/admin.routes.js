@@ -24,4 +24,6 @@ module.exports = function (app) {
   app.post("/dangKyLopTC", controller.dangKyLopTC);
   app.post("/ghiDiemSV", controller.ghiDiemSV);
   app.post("/dsHocPhi", controller.layDsHocPhi);
+  app.post("/laySinhVien", controller.laySinhVien);
+  app.post("/layCTHocPhi", controller.layCTHocPhi);
 };

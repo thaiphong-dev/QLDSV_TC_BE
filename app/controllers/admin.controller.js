@@ -301,3 +301,76 @@ exports.dangKyLopTC = async (req, res, next) => {
     console.log(error);
   }
 };
+
+// gHI ĐIỂM SINH VIÊN
+exports.ghiDiemSV = async (req, res, next) => {
+  try {
+    let connection = await sql.connect(
+      config(req.body.user, req.body.password, req.body.chiNhanh)
+    );
+
+    const table = new sql.Table("DANGKYTYPE");
+
+    // Define the table type schema
+    table.columns.add("MALTC", sql.Int);
+    table.columns.add("MASV", sql.VarChar);
+    table.columns.add("DIEM_CC", sql.Int);
+    table.columns.add("DIEM_GK", sql.Float);
+    table.columns.add("DIEM_CK", sql.Float);
+    table.columns.add("HUYDANGKY", sql.Bit);
+
+    req.body.dsDiem?.forEach((e) => {
+      table.rows.add(
+        e.MALTC,
+        e.MASV,
+        e.DIEM_CC,
+        e.DIEM_GK,
+        e.DIEM_CK,
+        e.HUYDANGKY
+      );
+    });
+
+    let data = await connection
+      .request()
+      .input("DANGKY", table)
+      .execute("SP_Ghi_Diem_SV");
+
+    res.status(200).send({ data: [] });
+
+    await connection.close();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.layDsHocPhi = async (req, res, next) => {
+  try {
+    let connection = await sql.connect(
+      config(req.body.user, req.body.password, req.body.chiNhanh)
+    );
+    let sinhVien = await connection
+      .request()
+      .input("MASV", sql.NVarChar, req.body.MASV)
+      .query(
+        "select HOTEN = (HO +' '+ TEN), MALOP from SINHVIEN where MASV = @MASV"
+      );
+
+    let hocphi = await connection
+      .request()
+      .input("MASV", sql.NVarChar, req.body.MASV)
+      .input("PAGESIZE", sql.Int, req.body.pageSize)
+      .input("PAGENUMBER", sql.Int, req.body.pageNumber)
+      .execute("SP_Lay_hoc_Phi");
+
+    res.status(200).send({
+      data: {
+        hocPhi: hocphi.recordset,
+        sinhVien: sinhVien.recordset,
+      },
+    });
+
+    await connection.close();
+  } catch (error) {
+    console.log(error);
+  }
+};

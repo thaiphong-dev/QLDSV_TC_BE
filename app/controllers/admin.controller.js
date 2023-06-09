@@ -1,5 +1,8 @@
 const sql = require("mssql/msnodesqlv8");
 var config = require("../config/db.config");
+const moment = require("moment");
+
+const mssql = require("mssql");
 
 exports.layDsMonHoc = async (req, res, next) => {
   try {
@@ -411,5 +414,61 @@ exports.layCTHocPhi = async (req, res, next) => {
     await connection.close();
   } catch (error) {
     console.log(error);
+  }
+};
+
+// Đóng học phí
+// const sql = require("mssql/msnodesqlv8");
+// var config = require("../config/db.config");
+
+exports.dongHocPhi = async (req, res, next) => {
+  try {
+    let connection = await sql.connect(
+      config(req.body.user, req.body.password, req.body.chiNhanh)
+    );
+
+    const tableHP = new sql.Table("HOCPHITYPE");
+    tableHP.columns.add("MASV", sql.VarChar);
+    tableHP.columns.add("NIENKHOA", sql.VarChar);
+    tableHP.columns.add("HOCKY", sql.Int);
+    tableHP.columns.add("HOCPHI", sql.Int);
+
+    req.body.dsHocPhi?.forEach((e) => {
+      tableHP.rows.add(e.MASV, e.NIENKHOA, e.HOCKY, e.HOCPHI);
+    });
+
+    const tableCT = new sql.Table("CT_HOCPHITYPE");
+    tableCT.columns.add("MASV", sql.VarChar);
+    tableCT.columns.add("NIENKHOA", sql.VarChar);
+    tableCT.columns.add("HOCKY", sql.Int);
+    tableCT.columns.add("NGAYDONG", sql.Date);
+    tableCT.columns.add("SOTIENDONG", sql.Int);
+
+    req.body.dsCTHocPhi?.forEach((e) => {
+      tableCT.rows.add(e.MASV, e.NIENKHOA, e.HOCKY, new Date(), e.SOTIENDONG);
+    });
+
+    console.log("tableHP", tableHP);
+    console.log("tableCT", tableCT);
+
+    const request = await connection
+      .request()
+      .input("HOCPHI", tableHP)
+      .input("CTHOCPHI", tableCT)
+      .output("ErrorMessage", sql.NVarChar)
+      .execute("SP_Dong_Hoc_Phi");
+
+    console.log(request.output);
+    const errorMessage = request.output.ErrorMessage;
+    if (errorMessage !== null) {
+      console.error("Error:", errorMessage);
+    } else {
+      console.log("Stored procedure executed successfully.");
+      res.status(200).send({ data: [] });
+    }
+
+    await connection.close();
+  } catch (error) {
+    console.error("Error:", error.message);
   }
 };

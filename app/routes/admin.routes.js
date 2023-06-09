@@ -26,4 +26,5 @@ module.exports = function (app) {
   app.post("/dsHocPhi", controller.layDsHocPhi);
   app.post("/laySinhVien", controller.laySinhVien);
   app.post("/layCTHocPhi", controller.layCTHocPhi);
+  app.post("/dongHocPhi", controller.dongHocPhi);
 };

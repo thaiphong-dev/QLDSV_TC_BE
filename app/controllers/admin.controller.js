@@ -1,8 +1,5 @@
 const sql = require("mssql/msnodesqlv8");
 var config = require("../config/db.config");
-const moment = require("moment");
-
-const mssql = require("mssql");
 
 exports.layDsMonHoc = async (req, res, next) => {
   try {

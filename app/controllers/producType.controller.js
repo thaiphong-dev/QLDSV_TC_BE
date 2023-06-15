@@ -525,5 +525,5 @@ exports.taoHoaDon = async (req, res) => {
   });
 };
 exports.inHoaDon = async (req, res) => {
-  res.sendFile(`D:/thực hành tốt nghiệp 2022/BE/hoadon.pdf`);
+  res.sendFile(`P:/QLDSV_TC_reactjs/be/hoadon.pdf`);
 };

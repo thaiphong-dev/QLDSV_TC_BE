@@ -3,7 +3,44 @@ module.exports = (data) => {
   const addCommas = (num) =>
     num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   const removeNonNumeric = (num) => num.toString().replace(/[^0-9]/g, "");
+  const row = data.data.map(
+    (x, index) =>
+      `<tr>
+    <td>
+      <div>
+        <h2 class="formatTitle">${index + 1}</h2>
+      </div>
+    </td>
+    <td>
+      <div>
+        <h2 class="formatTitle">${x.MASV}</h2>
+      </div>
+    </td>
+    <td>
+      <div>
+        <h2 class="formatTitle">${x.HO}</h2>
+      </div>
+    </td>
+    <td>
+      <div>
+        <h2 class="formatTitle">${x.TEN}</h2>
+      </div>
+    </td>
 
+    <td>
+      <div>
+        <h2 class="formatTitle">${x.PHAI == 0 ? "Nam" : "Nữ"}</h2>
+      </div>
+    </td>
+
+    <td>
+      <div>
+        <h2 class="formatTitle">${x.MALTC}</h2>
+      </div>
+    </td>
+  </tr>
+`
+  );
   return `<!DOCTYPE html>
   <html lang="en">
     <head>
@@ -82,7 +119,7 @@ module.exports = (data) => {
           <div class="xcg13_body-header" style = "width: 100%">
             <h1
               style="
-                color: red;
+                color: rgb(119, 62, 62);
                 font-weight: 700;
                 text-transform: uppercase;
                 text-align: center;
@@ -111,7 +148,6 @@ module.exports = (data) => {
             >
             ${`Niên khóa: ${data.NIENKHOA} Học Kỳ: ${data.HOCKY}`}
             </h2>
-            </h2>
             <h2
               style="
                 font-weight: 700;
@@ -126,7 +162,7 @@ module.exports = (data) => {
           </div>
           <div class="xcg13_body-table">
             <table class="formatTable">
-            <tr>
+            <tr style = "background-color: rgb(119, 62, 62); color: white">
             <td>
               
                 <h2 class="formatTitle" style = "width: 5rem">STT</h2>
@@ -158,44 +194,7 @@ module.exports = (data) => {
             
           </td>
           </tr>
-          ${data.data.map(
-            (x, index) =>
-              `<tr>
-              <td>
-                <div>
-                  <h2 class="formatTitle">${index + 1}</h2>
-                </div>
-              </td>
-              <td>
-                <div>
-                  <h2 class="formatTitle">${x.MASV}</h2>
-                </div>
-              </td>
-              <td>
-                <div>
-                  <h2 class="formatTitle">${x.HO}</h2>
-                </div>
-              </td>
-              <td>
-                <div>
-                  <h2 class="formatTitle">${x.TEN}</h2>
-                </div>
-              </td>
-
-              <td>
-                <div>
-                  <h2 class="formatTitle">${x.PHAI === 0 ? "Nam" : "Nữ"}</h2>
-                </div>
-              </td>
-
-              <td>
-                <div>
-                  <h2 class="formatTitle">${x.MALTC}</h2>
-                </div>
-              </td>
-            </tr>
-  `
-          )}
+          ${row.join("")}
             </table>
   
           

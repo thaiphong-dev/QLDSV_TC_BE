@@ -3,43 +3,63 @@ module.exports = (data) => {
   const addCommas = (num) =>
     num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   const removeNonNumeric = (num) => num.toString().replace(/[^0-9]/g, "");
-  const row = data.data?.map(
+  const row = data.data.map(
     (x, index) =>
-      `
-    <tr>
-      <td>
-        <div>
-          <h2 class="formatTitle">${index + 1}</h2>
-        </div>
-      </td>
-      <td>
-        <div>
-          <h2 class="formatTitle">${x.TENMH}</h2>
-        </div>
-      </td>
-      <td>
-        <div>
-          <h2 class="formatTitle">${x.NHOM}</h2>
-        </div>
-      </td>
-      <td>
-        <div>
-          <h2 class="formatTitle">${x.GV}</h2>
-        </div>
-      </td>
+      `<tr>
+    <td>
+      <div>
+        <h2 class="formatTitle">${index + 1}</h2>
+      </div>
+    </td>
+    <td>
+      <div>
+        <h2 class="formatTitle">${x.MASV}</h2>
+      </div>
+    </td>
+    <td>
+      <div>
+        <h2 class="formatTitle">${x.HOTEN}</h2>
+      </div>
+    </td>
 
-      <td>
-        <div>
-          <h2 class="formatTitle">${x.SOSVTOITHIEU}</h2>
-        </div>
-      </td>
+    <td>
+      <div>
+        <h2 class="formatTitle">${
+          x.DIEM_CC
+            ? (Math.floor(parseFloat(x.DIEM_CC) * 2) / 2).toFixed(1)
+            : ""
+        }</h2>
+      </div>
+    </td>
 
-      <td>
-        <div>
-          <h2 class="formatTitle">${x.SoLuongDK}</h2>
-        </div>
-      </td>
-    </tr>
+    <td>
+      <div>
+        <h2 class="formatTitle">${
+          x.DIEM_GK
+            ? (Math.floor(parseFloat(x.DIEM_GK) * 2) / 2).toFixed(1)
+            : ""
+        }</h2>
+      </div>
+    </td>
+    <td>
+      <div>
+        <h2 class="formatTitle">${
+          x.DIEM_CK
+            ? (Math.floor(parseFloat(x.DIEM_CK) * 2) / 2).toFixed(1)
+            : ""
+        }</h2>
+      </div>
+    </td>
+    <td>
+      <div>
+        <h2 class="formatTitle">${
+          x.DIEM_TK
+            ? (Math.floor(parseFloat(x.DIEM_TK) * 2) / 2).toFixed(1)
+            : ""
+        }</h2>
+      </div>
+    </td>
+  </tr>
 `
   );
   return `<!DOCTYPE html>
@@ -117,7 +137,7 @@ module.exports = (data) => {
         
       
         <div class="xcg13_body">
-          <div class="xcg13_body-header">
+          <div class="xcg13_body-header" style = "width: 100%">
             <h1
               style="
                 color: rgb(119, 62, 62);
@@ -127,7 +147,7 @@ module.exports = (data) => {
                 text-transform: uppercase;
               "
             >
-              Danh Sách lớp tín chỉ
+              Bảng điểm hết môn
             </h1>
   
             <h2
@@ -149,7 +169,15 @@ module.exports = (data) => {
             >
             ${`Niên khóa: ${data.NIENKHOA} Học Kỳ: ${data.HOCKY}`}
             </h2>
-  
+            <h2
+              style="
+                font-weight: 700;
+                text-transform: uppercase;
+                text-align: center;
+              "
+            >
+            ${`Môn học: ${data.TENMH} -  Nhóm: ${data.NHOM}`}
+            </h2>
             
   
           </div>
@@ -163,27 +191,32 @@ module.exports = (data) => {
             </td>
             <td>
               
-                <h2 class="formatTitle" >Tên môn học</h2>
+                <h2 class="formatTitle" style = "width: 13rem" >Mã sinh viên</h2>
               
             </td>
             <td>
               
-                <h2 class="formatTitle" style = "width: 5rem">Nhóm</h2>
+                <h2 class="formatTitle" style = "width: 13rem">Họ và tên</h2>
               
             </td>
             <td>
               
-              <h2 class="formatTitle" style = "width: 17rem">Họ tên Giang viên</h2>
+              <h2 class="formatTitle" style = "width: 7rem">Điểm chuyên cần</h2>
             
           </td>
           <td>
               
-              <h2 class="formatTitle" style = "width: 7rem">Số SV tối thiểu</h2>
+              <h2 class="formatTitle" style = "width: 7rem">Điểm giữa kỳ</h2>
             
           </td>
           <td>
               
-              <h2 class="formatTitle" style = "width: 7rem">Số SV đã đăng ký</h2>
+              <h2 class="formatTitle" style = "width: 7rem">Điểm cuối kỳ</h2>
+            
+          </td>
+          <td>
+              
+              <h2 class="formatTitle" style = "width: 5rem">Điểm hết môn</h2>
             
           </td>
           </tr>
@@ -194,7 +227,7 @@ module.exports = (data) => {
           </div>
         </div>
         <div style="padding-bottom: 1rem;">
-            <h2 style="display:block; position: relative; top: 3rem; left: 2rem">Số lượng lớp đã mở: ${
+            <h2 style="display:block; position: relative; top: 3rem; left: 2rem">Số sinh viên: ${
               data.data?.length
             } </h2>
           </div>

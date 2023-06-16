@@ -3,10 +3,32 @@ module.exports = (data) => {
   const addCommas = (num) =>
     num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   const removeNonNumeric = (num) => num.toString().replace(/[^0-9]/g, "");
-  const row = data.data?.map(
+
+  const column = data.dsMonHoc.map(
+    (x) => `
+    <td>
+    
+      <h2 class="formatTitle"  >${x.TENMH}</h2>
+    
+  </td>
+    `
+  );
+  const subRow = (x) => {
+    return x?.dsDiem.map(
+      (k, i) => `
+  <td>
+    <div>
+      <h2 class="formatTitle">${
+        k[`diem${i}`] ? k[`diem${i}`] : k[`diem${i}`] ?? ""
+      }</h2>
+    </div>
+  </td>
+  `
+    );
+  };
+  const rowParent = data.data.map(
     (x, index) =>
-      `
-    <tr>
+      `<tr>
       <td>
         <div>
           <h2 class="formatTitle">${index + 1}</h2>
@@ -14,31 +36,10 @@ module.exports = (data) => {
       </td>
       <td>
         <div>
-          <h2 class="formatTitle">${x.TENMH}</h2>
+          <h2 class="formatTitle">${x.MASV}-${x.HOTEN}</h2>
         </div>
       </td>
-      <td>
-        <div>
-          <h2 class="formatTitle">${x.NHOM}</h2>
-        </div>
-      </td>
-      <td>
-        <div>
-          <h2 class="formatTitle">${x.GV}</h2>
-        </div>
-      </td>
-
-      <td>
-        <div>
-          <h2 class="formatTitle">${x.SOSVTOITHIEU}</h2>
-        </div>
-      </td>
-
-      <td>
-        <div>
-          <h2 class="formatTitle">${x.SoLuongDK}</h2>
-        </div>
-      </td>
+      ${subRow(x).join("")}
     </tr>
 `
   );
@@ -117,7 +118,7 @@ module.exports = (data) => {
         
       
         <div class="xcg13_body">
-          <div class="xcg13_body-header">
+          <div class="xcg13_body-header" style = "width: 100%">
             <h1
               style="
                 color: rgb(119, 62, 62);
@@ -127,19 +128,10 @@ module.exports = (data) => {
                 text-transform: uppercase;
               "
             >
-              Danh Sách lớp tín chỉ
+              Bảng điểm tổng kết cuối khóa
             </h1>
   
-            <h2
-            style="
-              font-weight: 700;
-              text-transform: uppercase;
-              text-align: center;
-              text-transform: uppercase;
-            "
-          >
-          ${`Khoa: ${data.khoa}`}
-          </h2>
+            
             <h2
               style="
                 font-weight: 700;
@@ -147,57 +139,46 @@ module.exports = (data) => {
                 text-align: center;
               "
             >
-            ${`Niên khóa: ${data.NIENKHOA} Học Kỳ: ${data.HOCKY}`}
+            ${`Lớp: ${data.LOP.TENLOP} - Khóa học: ${data.LOP.KHOAHOC}`}
             </h2>
-  
             
-  
+            <h2
+            style="
+              font-weight: 700;
+              text-transform: uppercase;
+              text-align: center;
+            "
+          >
+          ${`Lớp: ${data.KHOA}`}
+          </h2>
+
           </div>
           <div class="xcg13_body-table">
             <table class="formatTable">
             <tr style = "background-color: rgb(119, 62, 62); color: white">
+            
             <td>
               
                 <h2 class="formatTitle" style = "width: 5rem">STT</h2>
               
             </td>
+
             <td>
               
-                <h2 class="formatTitle" >Tên môn học</h2>
+                <h2 class="formatTitle" >MÃ SV - Họ Tên</h2>
               
             </td>
-            <td>
-              
-                <h2 class="formatTitle" style = "width: 5rem">Nhóm</h2>
-              
-            </td>
-            <td>
-              
-              <h2 class="formatTitle" style = "width: 17rem">Họ tên Giang viên</h2>
+           
+          ${column.join("")}
             
-          </td>
-          <td>
-              
-              <h2 class="formatTitle" style = "width: 7rem">Số SV tối thiểu</h2>
-            
-          </td>
-          <td>
-              
-              <h2 class="formatTitle" style = "width: 7rem">Số SV đã đăng ký</h2>
-            
-          </td>
           </tr>
-          ${row.join("")}
+          ${rowParent.join("")}
             </table>
   
           
           </div>
         </div>
-        <div style="padding-bottom: 1rem;">
-            <h2 style="display:block; position: relative; top: 3rem; left: 2rem">Số lượng lớp đã mở: ${
-              data.data?.length
-            } </h2>
-          </div>
+        
         <h2 class="formatline" style="display:block; position: relative; top: 3rem; left: 30rem"> ${`Ngày ${today.getDate()} tháng ${
           today.getMonth() + 1
         } năm ${today.getFullYear()}`}</h2>

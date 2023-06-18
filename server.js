@@ -54,9 +54,7 @@ const swaggerOptions = {
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 // routes
-require("./app/routes/auth.routes")(app);
-require("./app/routes/user.routes")(app);
-require("./app/routes/productType.routes")(app);
+
 require("./app/routes/login.routes")(app);
 require("./app/routes/admin.routes")(app);
 require("./app/routes/report.routes")(app);

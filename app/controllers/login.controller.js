@@ -29,6 +29,7 @@ exports.dangNhap = async (req, res, next) => {
     await connection.close();
   } catch (error) {
     console.log(error);
+    res.status(500).send({ error: "Tài khoảng hoặc mật khẩu không đúng!" });
   }
 };
 
@@ -43,9 +44,14 @@ exports.dangNhapSV = async (req, res, next) => {
       .query(
         `SELECT MASV, HOTEN = ( HO+ ' '+ TEN), PHAI, DIACHI, NGAYSINH, MALOP, DANGHIHOC FROM SINHVIEN WHERE MASV = @MASV`
       );
-    res.status(200).send({ data: thongTin.recordset[0] });
+    if (thongTin.recordset[0]) {
+      res.status(200).send({ data: thongTin.recordset[0] });
+    } else {
+      res.status(500).send({ error: "Không tìm thấy mã Sinh viên!" });
+    }
     await connection.close();
   } catch (error) {
     console.log(error);
+    res.status(500).send({ error: "Không tìm thấy mã Sinh viên!" });
   }
 };

@@ -21,6 +21,9 @@ exports.layDsMonHoc = async (req, res, next) => {
     await connection.close();
   } catch (error) {
     console.log(error);
+    res.status(500).send({
+      error: "Lỗi kết nối đến db",
+    });
   }
 };
 
@@ -112,7 +115,7 @@ exports.taoLopTC = async (req, res, next) => {
       .input("hocki", sql.Int, parseInt(req.body.hocKy))
       .input("mamh", sql.NVarChar, req.body.monHoc)
       .input("nhom", sql.Int, parseInt(req.body.nhom))
-      .execute("SP_CheckExistLTC");
+      .execute("SP_KT_Ton_Tai_LTC");
 
     if (flag.returnValue === 1) {
       res.statusMessage = "duplicated";
@@ -141,6 +144,7 @@ exports.taoLopTC = async (req, res, next) => {
     await connection.close();
   } catch (error) {
     console.log(error);
+    res.status(500).send({ error: "Vui lòng kiểm tra lại dữ liệu" });
   }
 };
 
@@ -161,8 +165,7 @@ exports.layDsSinhVien = async (req, res, next) => {
     console.log(error);
   }
 };
-
-exports.layDsFilter = async (req, res, next) => {
+const layNienKhoa = async (req, res) => {
   try {
     let connection = await sql.connect(
       config(req.body.user, req.body.password, req.body.chiNhanh)
@@ -171,18 +174,55 @@ exports.layDsFilter = async (req, res, next) => {
       .request()
       .query(`SELECT DISTINCT NIENKHOA FROM LOPTINCHI`);
 
+    await connection.close();
+    return DSNIENKHOA.recordset;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const layHocKy = async (req, res) => {
+  try {
+    let connection = await sql.connect(
+      config(req.body.user, req.body.password, req.body.chiNhanh)
+    );
     let DSHOCKY = await connection
       .request()
       .query(`SELECT DISTINCT HOCKY FROM LOPTINCHI`);
 
+    await connection.close();
+    return DSHOCKY.recordset;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const layNhom = async (req, res) => {
+  try {
+    let connection = await sql.connect(
+      config(req.body.user, req.body.password, req.body.chiNhanh)
+    );
     let DSNHOM = await connection
       .request()
       .query(`SELECT DISTINCT NHOM FROM LOPTINCHI`);
+
+    await connection.close();
+    return DSNHOM.recordset;
+  } catch (error) {
+    console.log(error);
+  }
+};
+exports.layDsFilter = async (req, res, next) => {
+  try {
+    let connection = await sql.connect(
+      config(req.body.user, req.body.password, req.body.chiNhanh)
+    );
+
     res.status(200).send({
       data: {
-        nienKhoa: DSNIENKHOA.recordset,
-        hocKy: DSHOCKY.recordset,
-        nhom: DSNHOM.recordset,
+        nienKhoa: await layNienKhoa(req, res),
+        hocKy: await layHocKy(req, res),
+        nhom: await layNhom(req, res),
       },
     });
     await connection.close();
@@ -299,6 +339,7 @@ exports.dangKyLopTC = async (req, res, next) => {
     await connection.close();
   } catch (error) {
     console.log(error);
+    res.status(500).send({ error: "Vui lòng kiểm tra lại dữ liệu" });
   }
 };
 
@@ -340,6 +381,7 @@ exports.ghiDiemSV = async (req, res, next) => {
     await connection.close();
   } catch (error) {
     console.log(error);
+    res.status(500).send({ error: "Vui lòng kiểm tra lại dữ liệu" });
   }
 };
 
@@ -466,6 +508,7 @@ exports.dongHocPhi = async (req, res, next) => {
 
     await connection.close();
   } catch (error) {
-    console.error("Error:", error.message);
+    console.log(error);
+    res.status(500).send({ error: "Vui lòng kiểm tra lại dữ liệu" });
   }
 };
